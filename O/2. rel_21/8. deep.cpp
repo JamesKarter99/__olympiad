@@ -7,69 +7,68 @@
 #include <algorithm>
 #include <vector>
 #include <iomanip>
-#include <math.h>
+#include <stack>
 #include <map>
 
+#define all(s) s.begin(), s.end()
 #define sqr(a) ((a)*(a))
+#define srt(d) sort(all(d))
 
 using namespace std;
 
-using T = long double;
+using T = double;
+using line = vector <int>;
+using matrix = vector <line>;
 
-const T PI  = acos(-1.0);
-const T COS = cos(PI / 4);
+const T prec = 1e-11;
 
 T dist(T x1, T y1, T x2, T y2) {
     return sqrt(sqr(x1 - x2) + sqr(y1 - y2));
 }
 
-bool eq(T a, T b) {
-    return abs(a - b) < 1e-10;
-}
-
 int main() {
     // ...
     ios::sync_with_stdio(false);
-    freopen("deepest.in", "rt", stdin);
-    freopen("deepest.out", "wt", stdout);
-    T x, y, d;
+    //freopen("deepest.in", "rt", stdin);
+    //freopen("deepest.out", "wt", stdout);
+    int x, y, d;
     cin >> x >> y >> d;
 
-    T rf = dist(0, 0, x, y); /// фактическое рассояние между смольным и входом в станцию
+    T r = dist(0, 0, x, y);
 
-    if (eq(rf, d)) {
+    if (abs(r - d) < prec) {
         cout << "Single staircase";
     }
-    else if (rf > d) {
+    else if (r > d) {
         cout << "Impossible";
     }
     else {
-        T xp = x;
-        T yp, zp = y;
+        T dx, dy, dd;
+
+        dx = x;
 
         T mn(0), mx(d);
+        while (abs(mn - mx) > prec) {
+            dd = (mn + mx) / 2;
 
-        while (abs(mn - mx) > 1e-11) {
-            zp = (mn + mx) / 2; // это глубина промежуточной станции
-            yp = y + zp;        // это ее y-координата
+            dy = y + dd;
 
-            T rfstp = dist(x, y, xp, yp); // это фактическое расстояние между входом в станцию и промежуточной станцией
-            T rfpsm = dist(0, 0, xp, yp); // это фактическое расстояние между промежуточной станцией и смольным
+            // растояние между вестибюлем и станцией
+            T a = d - dd;             /// через глубину вестибюля и станции
+            T b = dist(0, 0, dx, dy); /// через координаты x и y вестибюля
 
-            if (eq(d - zp, rfpsm)) {
-                cout << fixed << setprecision(10) << xp << " ";
-                cout << fixed << setprecision(10) << yp << " ";
-                cout << fixed << setprecision(10) << zp << " ";
+            if (abs(a - b) < prec) {
+                cout << fixed << setprecision(10) << dx << " ";
+                cout << fixed << setprecision(10) << dy << " ";
+                cout << fixed << setprecision(10) << dd << " ";
                 return 0;
             }
-            else if (d - zp > rfpsm) {
-                mn = zp;
+            else if (a > b) {
+                mn = dd;
             }
             else {
-                mx = zp;
+                mx = dd;
             }
         }
     }
-
-    return 0;
 }
